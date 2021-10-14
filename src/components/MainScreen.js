@@ -1,38 +1,63 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect } from 'react'
+import { useDispatch } from 'react-redux';
 import {
     BrowserRouter as Router,
     Switch,
     Route,
-    Link,
     Redirect
 } from "react-router-dom";
-import { useFetchData } from '../customHooks/useFetchData';
+import { saveGames } from '../actions/games';
 import { Navbar } from '../shared/Navbar'
+import { GameDetails } from './gameDetails/GameDetails';
 import { GamesList } from './gamesList/GamesList'
 
 export const MainScreen = () => {
 
-    const [data, loading] = useFetchData(`https://www.speedrun.com/api/v1/games`);
+    const dispatch = useDispatch();
+
+    const fetchGames = async (uri) => {
+        const res = await fetch(uri, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+
+        const { data } = await res.json();
+        dispatch(saveGames(data));
+    }
+
+    //Fetching data and dispatching to Redux store every time the page loads
+    useEffect(() => {
+        fetchGames('https://www.speedrun.com/api/v1/games');
+    }, []);
 
     return (
         <>
-            <Navbar />
+            <Router>
+                <Navbar />
 
-            <div className="container py-3">
-                <Router>
+                <div className="container py-3">
+
                     <Switch>
-                        <Route path="/">
-                            <GamesList data={data} loading={loading} />
-                        </Route>
 
-                        <Route path="/game/:id">
-                            <GamesList data={data} loading={loading} />
-                        </Route>
+                        <Route
+                            exact
+                            path="/"
+                            component={GamesList}
+                        />
+
+                        <Route
+                            exact
+                            path="/game/:id"
+                            component={GameDetails}
+                        />
 
                         <Redirect to="/" />
+
                     </Switch>
-                </Router>
-            </div>
+                </div>
+            </Router>
         </>
     )
 }

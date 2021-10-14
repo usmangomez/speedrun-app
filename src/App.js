@@ -1,9 +1,14 @@
 import React from 'react'
+import { Provider } from 'react-redux'
 import { MainScreen } from './components/MainScreen'
+import { store } from './store/store'
 
 export const App = () => {
   return (
-    <MainScreen />
+
+    <Provider store={store}>
+      <MainScreen />
+    </Provider>
   )
 }
 

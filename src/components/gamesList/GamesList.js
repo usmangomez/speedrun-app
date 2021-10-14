@@ -1,15 +1,15 @@
-import React, { useEffect } from 'react'
+import React from 'react'
+import { useSelector } from 'react-redux';
 import { Cards } from './parts/Cards'
 
 export const GamesList = ({ data, loading }) => {
 
-    useEffect(() => {
-        console.log(data)
-    }, [data]);
+    //Get array data from Redux store
+    const { games } = useSelector(state => state);
 
     return (
         <>
-            {loading ?
+            {!games.data ?
                 <div className="d-flex justify-content-center">
                     <div className="spinner-border text-dark " role="status" >
                         <span className="visually-hidden">Loading...</span>
@@ -20,7 +20,7 @@ export const GamesList = ({ data, loading }) => {
 
                 <div className="row">
 
-                    {data && data.map(game =>
+                    {games.data && games.data.map(game =>
                         <Cards key={game.id} game={game} />
                     )}
 
